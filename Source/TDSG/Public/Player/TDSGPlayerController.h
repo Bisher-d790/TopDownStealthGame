@@ -20,11 +20,13 @@ public:
 
 	/** Time Threshold to know if it was a short press */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	float ShortPressThreshold;
+		float ShortPressThreshold;
 
 	/** FX Class that we will spawn when clicking */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UNiagaraSystem* FXCursor;
+		UNiagaraSystem* FXCursor;
+
+	void OnPlayerDetected(APawn* Enemy);
 
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */

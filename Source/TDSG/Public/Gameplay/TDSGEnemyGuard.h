@@ -19,10 +19,24 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditDefaultsOnly, Category = AI)
+		class UPawnSensingComponent* SensingComponent;
+
+	UFUNCTION()
+		void OnPawnDetected(APawn* Pawn);
+
 	UPROPERTY(EditDefaultsOnly, Category = Movement)
 		float RotationRate;
 
 	float DeltaRotation;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = FX)
+		void OnPlayerDetectedFX(APawn* Player);
+
+	UPROPERTY(EditDefaultsOnly, Category = AI)
+		class UBehaviorTree* BehaviorTreeAsset;
+
+	class AAIController* AIController;
 
 public:
 	// Called every frame

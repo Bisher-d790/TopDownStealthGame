@@ -3,12 +3,20 @@
 
 #include "Gameplay/TDSGEnemyGuard.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Perception/PawnSensingComponent.h"
+#include "Player/TDSGCharacter.h"
+#include <AIController.h>
+#include <Blueprint/AIBlueprintHelperLibrary.h>
+#include "BehaviorTree/BehaviorTree.h"
 
 // Sets default values
 ATDSGEnemyGuard::ATDSGEnemyGuard()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	SensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("Pawn Sensing Component"));
+	SensingComponent->OnSeePawn.AddDynamic(this, &ATDSGEnemyGuard::OnPawnDetected);
 
 	RotationRate = 5.f;
 }
@@ -18,6 +26,10 @@ void ATDSGEnemyGuard::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AIController = UAIBlueprintHelperLibrary::GetAIController(this);
+
+	if (IsValid(AIController) && BehaviorTreeAsset)
+		AIController->RunBehaviorTree(BehaviorTreeAsset);
 }
 
 // Called every frame
@@ -62,4 +74,19 @@ float ATDSGEnemyGuard::LookAt(FVector PointToLook)
 	DeltaRotation = TargetRotation.Yaw - OriginalRotation.Yaw;
 
 	return FMath::Abs(RotationRate / DeltaRotation);
+}
+
+void ATDSGEnemyGuard::OnPawnDetected(APawn* Pawn)
+{
+	ATDSGCharacter* PlayerPawn = Cast<ATDSGCharacter>(Pawn);
+
+	if (!IsValid(PlayerPawn) || !PlayerPawn->IsLocallyControlled() || PlayerPawn->GetIsDetected())
+		return;
+
+	PlayerPawn->OnDetected(this);
+
+	if (IsValid(AIController))
+		AIController->StopMovement();
+
+	OnPlayerDetectedFX(PlayerPawn);
 }

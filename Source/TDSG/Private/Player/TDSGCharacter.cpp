@@ -10,6 +10,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Materials/Material.h"
 #include "Engine/World.h"
+#include "Player/TDSGPlayerController.h"
+#include "Core/TDSGGameMode.h"
+
 
 ATDSGCharacter::ATDSGCharacter()
 {
@@ -47,5 +50,26 @@ ATDSGCharacter::ATDSGCharacter()
 
 void ATDSGCharacter::Tick(float DeltaSeconds)
 {
-    Super::Tick(DeltaSeconds);
+	Super::Tick(DeltaSeconds);
+}
+
+void ATDSGCharacter::OnDetected(APawn* Enemy)
+{
+	if (bIsDetected) return;
+
+	bIsDetected = true;
+
+	ATDSGPlayerController* PlayerController = Cast<ATDSGPlayerController>(GetController());
+
+	if (!PlayerController) return;
+
+	PlayerController->OnPlayerDetected(Enemy);
+	DisableInput(PlayerController);
+
+	ATDSGGameMode* GameMode = Cast<ATDSGGameMode>(GetWorld()->GetAuthGameMode());
+
+	if (!GameMode) return;
+	GameMode->OnPlayerDetected(this);
+
+	OnDetectedFX(Enemy);
 }

@@ -13,6 +13,15 @@ class ATDSGGameMode : public AGameModeBase
 
 public:
 	ATDSGGameMode();
+
+	void OnPlayerDetected(class ATDSGCharacter* Player);
+
+	UFUNCTION()
+		void RestartLevel();
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = Settings)
+		float RestartLevelTimeout;
 };
 
 

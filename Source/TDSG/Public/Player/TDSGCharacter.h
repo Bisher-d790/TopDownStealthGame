@@ -22,13 +22,22 @@ public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
-private:
+	void OnDetected(APawn* Enemy);
+
+	FORCEINLINE bool GetIsDetected() { return bIsDetected; };
+
+protected:
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* TopDownCameraComponent;
+		class UCameraComponent* TopDownCameraComponent;
 
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
+		class USpringArmComponent* CameraBoom;
+
+	bool bIsDetected;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = FX)
+		void OnDetectedFX(APawn* EnemyCatcher);
 };
 
